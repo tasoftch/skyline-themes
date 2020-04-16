@@ -32,6 +32,4 @@
  *
  */
 
-return [
-
-];
+return Phar::running();

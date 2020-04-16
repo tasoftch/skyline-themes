@@ -35,36 +35,48 @@
 namespace Skyline\Themes;
 
 
-use Skyline\Themes\Meta\DynamicMeta;
+use Skyline\Themes\Exception\ThemeException;
+use Skyline\Themes\Meta\StaticMeta;
 
 class PharTheme extends AbstractFileTheme
 {
-	const SIZES_FILE_KEY = 'sizes';
-	const HASHES_FILE_KEY = 'hashes';
-
-	private $phar;
+	protected $pharAccessPrefix;
 
 	/**
 	 * @inheritDoc
 	 */
 	protected function loadFile($filename): bool
 	{
-		$info = require $filename;
-		if(is_array($info) || $info instanceof \ArrayAccess) {
-			$this->phar = new \Phar($filename);
+		$fh = fopen($filename, 'rb');
+		$check = fread($fh, 5);
+		fclose($fh);
 
-			$md = new DynamicMeta();
-			if(is_array($sizes = $info[self::SIZES_FILE_KEY] ?? NULL)) {
-				$md->setFileSizes($sizes);
-			}
-			if(is_array($hashes = $info[self::HASHES_FILE_KEY] ?? NULL)) {
-				$md->setFileHashes($hashes);
-			}
+		if($check != '<?php')
+			throw new ThemeException("Can not open %s. Invalid architecture", 0, NULL, basename($filename));
 
-			$this->meta = $md;
+		$this->pharAccessPrefix = $path = require $filename;
+		if(is_file($path)) {
+			if(is_file("$path/sizes.php")) {
+				$sizes = require "$path/sizes.php";
+			} else
+				throw new ThemeException("Can not open %s. Invalid architecture: expecting sizes.php file", 0, NULL, basename($filename));
+
+			if(is_file("$path/hashes.php")) {
+				$hashes = require "$path/hashes.php";
+			} else
+				throw new ThemeException("Can not open %s. Invalid architecture: expecting hashes.php file", 0, NULL, basename($filename));
+
+			$this->meta = $this->makeMetadata($sizes, $hashes);
 			return true;
 		}
 		return false;
+	}
+
+	protected function makeMetadata($sizes, $hashes) {
+		return new StaticMeta(
+			$sizes ?: [],
+			$hashes ?: []
+		);
 	}
 
 	/**
@@ -72,6 +84,6 @@ class PharTheme extends AbstractFileTheme
 	 */
 	public function extractFile(string $fileID, string $destination): bool
 	{
-		// TODO: Implement extractFile() method.
+		return copy("$this->pharAccessPrefix/$fileID", $destination);
 	}
 }

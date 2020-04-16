@@ -32,6 +32,7 @@
  *
  */
 
+use Skyline\Themes\PharTheme;
 use Symfony\Component\Console\Application;
 use TASoft\Util\Command\CheckCommand;
 use TASoft\Util\Command\ExecCommand;

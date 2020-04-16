@@ -45,7 +45,7 @@ use Skyline\Themes\PharTheme;
 class ThemeTest extends TestCase
 {
 	public function testLoadPharTheme() {
-		$theme = new PharTheme("Tests/Themes/theme1.phar");
+		$theme = new PharTheme("Tests/Themes/theme1.s-theme");
 
 	}
 }
