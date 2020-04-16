@@ -32,10 +32,46 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes;
 
 
-interface ThemeServiceInterface
+use Skyline\Themes\Meta\DynamicMeta;
+
+class PharTheme extends AbstractFileTheme
 {
-	public function getThemes();
+	const SIZES_FILE_KEY = 'sizes';
+	const HASHES_FILE_KEY = 'hashes';
+
+	private $phar;
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function loadFile($filename): bool
+	{
+		$info = require $filename;
+		if(is_array($info) || $info instanceof \ArrayAccess) {
+			$this->phar = new \Phar($filename);
+
+			$md = new DynamicMeta();
+			if(is_array($sizes = $info[self::SIZES_FILE_KEY] ?? NULL)) {
+				$md->setFileSizes($sizes);
+			}
+			if(is_array($hashes = $info[self::HASHES_FILE_KEY] ?? NULL)) {
+				$md->setFileHashes($hashes);
+			}
+
+			$this->meta = $md;
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function extractFile(string $fileID, string $destination): bool
+	{
+		// TODO: Implement extractFile() method.
+	}
 }

@@ -32,10 +32,75 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes\Hash;
 
 
-interface ThemeServiceInterface
+use SplFileInfo;
+
+class HashFileContentGenerator extends AbstractGenerator
 {
-	public function getThemes();
+	const ALGO_MD2 = 'md2';
+	const ALGO_MD4 = 'md4';
+	const ALGO_MD5 = 'md5';
+
+	const ALGO_SHA_1 = 'sha1';
+	const ALGO_SHA_224 = 'sha224';
+	const ALGO_SHA_256 = 'sha256';
+	const ALGO_SHA_384 = 'sha384';
+
+	const ALGO_SHA_512 = 'sha512';
+	const ALGO_SHA_512_224 = 'sha512/224';
+	const ALGO_SHA_512_256 = 'sha512/256';
+
+	const ALGO_SHA_3_224 = 'sha3-224';
+	const ALGO_SHA_3_256 = 'sha3-256';
+	const ALGO_SHA_3_384 = 'sha3-384';
+	const ALGO_SHA_3_512 = 'sha3-512';
+
+	/** @var string */
+	private $algorithm;
+
+	/**
+	 * HashFileGenerator constructor.
+	 * @param string $algorythmus
+	 */
+	public function __construct(string $algorithm = self::ALGO_SHA_384)
+	{
+		$this->algorithm = $algorithm;
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function generateFileHash($file): ?string
+	{
+		if($file instanceof SplFileInfo)
+			$file = $file->getRealPath();
+
+		return hash_file($this->getAlgorithm(), $file);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAlgorithm(): string
+	{
+		return $this->algorithm;
+	}
+
+	/**
+	 * Sets the algorithm
+	 * For possible values see self::ALG_O*
+	 *
+	 * @param string $algorithm
+	 * @return static
+	 * @see HashFileContentGenerator::ALGO_*
+	 * @see hash_hmac_algos
+	 */
+	public function setAlgorithm(string $algorithm)
+	{
+		$this->algorithm = $algorithm;
+		return $this;
+	}
 }

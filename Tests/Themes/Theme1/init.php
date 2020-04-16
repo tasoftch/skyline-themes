@@ -32,10 +32,6 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+return [
 
-
-interface ThemeServiceInterface
-{
-	public function getThemes();
-}
+];

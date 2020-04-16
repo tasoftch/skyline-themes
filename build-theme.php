@@ -32,10 +32,24 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+use Symfony\Component\Console\Application;
+use TASoft\Util\Command\CheckCommand;
+use TASoft\Util\Command\ExecCommand;
+use TASoft\Util\Command\LinkerCommand;
+use TASoft\Util\Command\PackCommand;
+use TASoft\Util\Command\ResolverCommand;
+use TASoft\Util\Command\RunnerCommand;
 
+require "vendor/autoload.php";
 
-interface ThemeServiceInterface
-{
-	public function getThemes();
+if(php_sapi_name() == 'cli') {
+	$app = new Application("TASoft PHP Executable Builder", '0.7');
+	$app->add( new CheckCommand() );
+	$app->add(new ResolverCommand());
+	$app->add(new PackCommand());
+	$app->add(new ExecCommand());
+	$app->add(new RunnerCommand());
+	$app->add(new LinkerCommand());
+
+	$app->run();
 }

@@ -32,10 +32,20 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+/**
+ * ThemeTest.php
+ * skyline-themes
+ *
+ * Created on 16.04.20 14:56 by thomas
+ */
 
+use PHPUnit\Framework\TestCase;
+use Skyline\Themes\PharTheme;
 
-interface ThemeServiceInterface
+class ThemeTest extends TestCase
 {
-	public function getThemes();
+	public function testLoadPharTheme() {
+		$theme = new PharTheme("Tests/Themes/theme1.phar");
+
+	}
 }

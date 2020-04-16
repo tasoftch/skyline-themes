@@ -32,10 +32,30 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+/**
+ * HashGeneratorTest.php
+ * skyline-themes
+ *
+ * Created on 16.04.20 11:22 by thomas
+ */
 
+use PHPUnit\Framework\TestCase;
+use Skyline\Themes\Hash\HashFileContentGenerator;
 
-interface ThemeServiceInterface
+class HashGeneratorTest extends TestCase
 {
-	public function getThemes();
+	public function testMD5Hash() {
+		$gen = new HashFileContentGenerator( HashFileContentGenerator::ALGO_MD5 );
+		$this->assertEquals(hash_file('md5', "LICENSE"), $gen->generateFileHash("LICENSE"));
+	}
+
+	public function testSHA1() {
+		$gen = new HashFileContentGenerator( HashFileContentGenerator::ALGO_SHA_1 );
+		$this->assertEquals(hash_file('sha1', "LICENSE"), $gen->generateFileHash("LICENSE"));
+	}
+
+	public function testSHA384() {
+		$gen = new HashFileContentGenerator( HashFileContentGenerator::ALGO_SHA_384 );
+		$this->assertEquals(hash_file('sha384', "LICENSE"), $gen->generateFileHash("LICENSE"));
+	}
 }

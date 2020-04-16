@@ -32,10 +32,41 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes\Meta;
 
 
-interface ThemeServiceInterface
+use Skyline\Themes\ThemeMetaInterface;
+
+class AbstractMeta implements ThemeMetaInterface
 {
-	public function getThemes();
+	/** @var array All file identifiers */
+	protected $fileIdentifiers = [];
+	/** @var array All file sizes */
+	protected $fileSizes = [];
+	/** @var array All file hashes */
+	protected $fileHashes = [];
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getFileIdentifiers(): array
+	{
+		return $this->fileIdentifiers;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getSize(string $fileID): int
+	{
+		return $this->fileSizes[$fileID] ?? 0;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getHash(string $fileID): string
+	{
+		return $this->fileHashes[$fileID] ?? "";
+	}
 }

@@ -32,10 +32,46 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes;
 
 
-interface ThemeServiceInterface
+use Skyline\Themes\Hash\GeneratorInterface;
+
+interface ThemeInterface
 {
-	public function getThemes();
+	/**
+	 * Returns the theme's name
+	 *
+	 * @return string
+	 */
+	public function getName();
+
+	/**
+	 * Returns the theme's identifier.
+	 * The identifier must be unique, but always the same for each theme (ex a filename)
+	 *
+	 * @return string
+	 */
+	public function getIdentifier();
+
+	/**
+	 * @return ThemeMetaInterface
+	 */
+	public function getMeta(): ?ThemeMetaInterface;
+
+	/**
+	 * This method must unpack the held file from the theme and install it at destination.
+	 *
+	 * @param string $fileID
+	 * @param string $destination
+	 * @return bool
+	 */
+	public function extractFile(string $fileID, string $destination): bool;
+
+	/**
+	 * Gets the hash generator used by the theme to compare file versions.
+	 *
+	 * @return GeneratorInterface
+	 */
+	public function getHashGenerator(): GeneratorInterface;
 }

@@ -32,10 +32,18 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes\Hash;
 
 
-interface ThemeServiceInterface
+use SplFileInfo;
+
+abstract class AbstractGenerator implements GeneratorInterface
 {
-	public function getThemes();
+	/**
+	 * @inheritDoc
+	 */
+	public function equalHashes($file, string $hash): bool
+	{
+		return hash_equals( $this->generateFileHash($file), $hash );
+	}
 }

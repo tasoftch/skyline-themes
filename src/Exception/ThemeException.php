@@ -32,10 +32,16 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes\Exception;
 
 
-interface ThemeServiceInterface
+use RuntimeException;
+use Throwable;
+
+class ThemeException extends RuntimeException
 {
-	public function getThemes();
+	public function __construct($message = "", $code = 0, Throwable $previous = NULL, ...$args)
+	{
+		parent::__construct(vsprintf($message, $args), $code, $previous);
+	}
 }

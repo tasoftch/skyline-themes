@@ -32,10 +32,55 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes;
 
 
-interface ThemeServiceInterface
+use Skyline\Themes\Exception\ThemeException;
+
+abstract class AbstractFileTheme extends AbstractTheme
 {
-	public function getThemes();
+	private $name;
+	private $filename;
+
+	/**
+	 * AbstractFileTheme constructor.
+	 * @param $name
+	 * @param $filename
+	 */
+	public function __construct(string $filename, string $name = "")
+	{
+		$this->name = $name ?: explode(".", basename($filename)) [0];
+		$this->filename = $filename;
+
+		if(!is_file($filename) || !is_readable($filename)) {
+			throw new ThemeException("File %s not found", 1822, NULL, htmlspecialchars( basename($filename) ));
+		}
+		if(!$this->loadFile($filename))
+			throw new ThemeException("Can not load theme file %s", 1822, NULL, htmlspecialchars( basename($filename) ));
+	}
+
+	/**
+	 * Loads the file
+	 *
+	 * @param $filename
+	 * @return bool
+	 */
+	abstract protected function loadFile($filename): bool;
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getIdentifier()
+	{
+		return $this->filename;
+	}
 }

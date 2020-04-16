@@ -32,10 +32,27 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes\Hash;
 
 
-interface ThemeServiceInterface
+use SplFileInfo;
+
+interface GeneratorInterface
 {
-	public function getThemes();
+	/**
+	 * Generates a hash from the given file.
+	 *
+	 * @param string|SplFileInfo $file
+	 * @return string|null
+	 */
+	public function generateFileHash($file): ?string;
+
+	/**
+	 * Checks if a given file's hash is equal to an existing hash.
+	 *
+	 * @param string|SplFileInfo $file
+	 * @param string $hash
+	 * @return bool
+	 */
+	public function equalHashes($file, string $hash): bool;
 }

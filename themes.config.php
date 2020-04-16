@@ -32,10 +32,14 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+use Skyline\Kernel\Config\MainKernelConfig;
+use Skyline\Themes\Service\ThemeService;
+use TASoft\Service\Config\AbstractFileConfiguration;
 
-
-interface ThemeServiceInterface
-{
-	public function getThemes();
-}
+return [
+	MainKernelConfig::CONFIG_SERVICES => [
+		'themeService' => [
+			AbstractFileConfiguration::SERVICE_CLASS => ThemeService::class
+		]
+	]
+];

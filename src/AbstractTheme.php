@@ -32,10 +32,37 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes;
 
 
-interface ThemeServiceInterface
+use Skyline\Themes\Hash\GeneratorInterface;
+use Skyline\Themes\Hash\HashFileContentGenerator;
+use Skyline\Themes\Meta\DynamicMeta;
+
+abstract class AbstractTheme implements ThemeInterface
 {
-	public function getThemes();
+	/** @var DynamicMeta */
+	protected $meta;
+	/** @var GeneratorInterface */
+	protected $generator;
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getMeta(): ?ThemeMetaInterface
+	{
+		if(!$this->meta)
+			$this->meta = new DynamicMeta();
+		return $this->meta;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getHashGenerator(): GeneratorInterface
+	{
+		if(!$this->generator)
+			$this->generator = new HashFileContentGenerator();
+		return $this->generator;
+	}
 }

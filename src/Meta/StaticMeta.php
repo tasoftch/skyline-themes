@@ -32,10 +32,20 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes\Meta;
 
 
-interface ThemeServiceInterface
+class StaticMeta extends AbstractMeta
 {
-	public function getThemes();
+	/**
+	 * StaticMeta constructor.
+	 * @param array $fileSizes
+	 * @param array $fileHashes
+	 */
+	public function __construct(array $fileSizes = [], array $fileHashes = [])
+	{
+		$this->fileHashes = $fileHashes;
+		$this->fileSizes = $fileSizes;
+		$this->fileIdentifiers = array_unique( array_merge( array_keys($fileSizes), array_keys($fileHashes) ) );
+	}
 }

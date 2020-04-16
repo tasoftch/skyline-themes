@@ -32,10 +32,32 @@
  *
  */
 
-namespace Skyline\Themes\Service;
+namespace Skyline\Themes;
 
 
-interface ThemeServiceInterface
+interface ThemeMetaInterface
 {
-	public function getThemes();
+	/**
+	 * Gets all file identifiers.
+	 * Should be the filenames including its directories
+	 *
+	 * @return array|string[]
+	 */
+	public function getFileIdentifiers(): array;
+
+	/**
+	 * Gets the size of a file in bytes.
+	 *
+	 * @param string $fileID
+	 * @return int
+	 */
+	public function getSize(string $fileID): int;
+
+	/**
+	 * Gets a filehash to ensure the file's integrity.
+	 *
+	 * @param string $fileID
+	 * @return string
+	 */
+	public function getHash(string $fileID): string;
 }
