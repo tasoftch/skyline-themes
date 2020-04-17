@@ -32,23 +32,56 @@
  *
  */
 
-use Skyline\Kernel\Config\MainKernelConfig;
-use Skyline\Themes\Service\ThemeService;
-use Skyline\Themes\Service\ThemeServiceFactory;
-use TASoft\Service\Config\AbstractFileConfiguration;
+namespace Skyline\Themes\Service;
 
-return [
-	MainKernelConfig::CONFIG_SERVICES => [
-		ThemeService::SERVICE_NAME => [
-			AbstractFileConfiguration::SERVICE_CONTAINER => ThemeServiceFactory::class,
-			AbstractFileConfiguration::CONFIG_SERVICE_TYPE_KEY => ThemeService::class,
-			AbstractFileConfiguration::SERVICE_INIT_CONFIGURATION => [
-				ThemeServiceFactory::THEMES_DIRECTORY_NAME => '$(/)/Themes',
-				ThemeServiceFactory::THEME_LOADERS => [
-					ThemeServiceFactory::PHAR_LOADER,
-					ThemeServiceFactory::SKYLINE_C_LOADER
-				]
-			]
-		]
-	]
-];
+
+use Skyline\Themes\Repository\Loader\DirectoryLoader;
+use Skyline\Themes\Repository\Loader\PharLoader;
+use Skyline\Themes\Repository\Loader\SkylineCLoader;
+use Skyline\Themes\Repository\RecursiveDirectoryRepository;
+use TASoft\Service\ConfigurableTrait;
+use TASoft\Service\Container\AbstractContainer;
+
+class ThemeServiceFactory extends AbstractContainer
+{
+	const THEMES_DIRECTORY_NAME = 'directoryName';
+	const THEME_LOADERS = 'loaders';
+
+	const PHAR_LOADER = 'PharLoader';
+	const SKYLINE_C_LOADER = 'SkylineCLoader';
+
+
+
+	use ConfigurableTrait;
+	/**
+	 * @inheritDoc
+	 */
+	protected function loadInstance()
+	{
+		$repo = new RecursiveDirectoryRepository($this->getConfiguration()[ static::THEMES_DIRECTORY_NAME ]);
+
+		foreach(($this->getConfiguration()[static::THEME_LOADERS] ?? []) as $loaderName) {
+			$this->addLoaderWithName($loaderName, $repo);
+		}
+
+		return $repo->getThemes();
+	}
+
+	protected function addLoaderWithName(string $name, RecursiveDirectoryRepository $repo) {
+		$method = "addLoaderAs$name";
+		if(is_callable([$this, $method]))
+			call_user_func([$this, $method], $repo);
+	}
+
+	protected function addLoaderAsPharLoader(RecursiveDirectoryRepository $repo) {
+		$repo->addLoader(new PharLoader());
+	}
+
+	protected function addLoaderAsSkylineCLoader(RecursiveDirectoryRepository $repo) {
+		$repo->addLoader(new SkylineCLoader());
+	}
+
+	protected function addLoaderAsDirectoryLoader(RecursiveDirectoryRepository $repo) {
+		$repo->addLoader(new DirectoryLoader());
+	}
+}
