@@ -32,55 +32,47 @@
  *
  */
 
-namespace Skyline\Themes;
+namespace Skyline\Themes\Theme;
 
 
-use Skyline\Themes\Exception\ThemeException;
+use Skyline\Themes\Hash\GeneratorInterface;
+use Skyline\Themes\Meta\ThemeMetaInterface;
 
-abstract class AbstractFileTheme extends AbstractTheme
+interface ThemeInterface
 {
-	private $name;
-	private $filename;
-
 	/**
-	 * AbstractFileTheme constructor.
-	 * @param $name
-	 * @param $filename
-	 */
-	public function __construct(string $filename, string $name = "")
-	{
-		$this->name = $name ?: explode(".", basename($filename)) [0];
-		$this->filename = $filename;
-
-		if(!is_file($filename) || !is_readable($filename)) {
-			throw new ThemeException("File %s not found", 1822, NULL, htmlspecialchars( basename($filename) ));
-		}
-		if(!$this->loadFile($filename))
-			throw new ThemeException("Can not load theme file %s", 1822, NULL, htmlspecialchars( basename($filename) ));
-	}
-
-	/**
-	 * Loads the file
+	 * Returns the theme's name
 	 *
-	 * @param $filename
+	 * @return string
+	 */
+	public function getName();
+
+	/**
+	 * Returns the theme's identifier.
+	 * The identifier must be unique, but always the same for each theme (ex a filename)
+	 *
+	 * @return string
+	 */
+	public function getIdentifier();
+
+	/**
+	 * @return ThemeMetaInterface
+	 */
+	public function getMeta(): ?ThemeMetaInterface;
+
+	/**
+	 * This method must unpack the held file from the theme and install it at destination.
+	 *
+	 * @param string $fileID
+	 * @param string $destination
 	 * @return bool
 	 */
-	abstract protected function loadFile($filename): bool;
-
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+	public function extractFile(string $fileID, string $destination): bool;
 
 	/**
-	 * @inheritDoc
+	 * Gets the hash generator used by the theme to compare file versions.
+	 *
+	 * @return GeneratorInterface
 	 */
-	public function getIdentifier()
-	{
-		return $this->filename;
-	}
+	public function getHashGenerator(): GeneratorInterface;
 }

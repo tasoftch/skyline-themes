@@ -32,46 +32,38 @@
  *
  */
 
-namespace Skyline\Themes;
+namespace Skyline\Themes\Theme;
 
 
 use Skyline\Themes\Hash\GeneratorInterface;
+use Skyline\Themes\Hash\HashFileContentGenerator;
+use Skyline\Themes\Meta\DynamicMeta;
+use Skyline\Themes\Meta\ThemeMetaInterface;
 
-interface ThemeInterface
+abstract class AbstractTheme implements ThemeInterface
 {
-	/**
-	 * Returns the theme's name
-	 *
-	 * @return string
-	 */
-	public function getName();
+	/** @var DynamicMeta */
+	protected $meta;
+	/** @var GeneratorInterface */
+	protected $generator;
 
 	/**
-	 * Returns the theme's identifier.
-	 * The identifier must be unique, but always the same for each theme (ex a filename)
-	 *
-	 * @return string
+	 * @inheritDoc
 	 */
-	public function getIdentifier();
+	public function getMeta(): ?ThemeMetaInterface
+	{
+		if(!$this->meta)
+			$this->meta = new DynamicMeta();
+		return $this->meta;
+	}
 
 	/**
-	 * @return ThemeMetaInterface
+	 * @inheritDoc
 	 */
-	public function getMeta(): ?ThemeMetaInterface;
-
-	/**
-	 * This method must unpack the held file from the theme and install it at destination.
-	 *
-	 * @param string $fileID
-	 * @param string $destination
-	 * @return bool
-	 */
-	public function extractFile(string $fileID, string $destination): bool;
-
-	/**
-	 * Gets the hash generator used by the theme to compare file versions.
-	 *
-	 * @return GeneratorInterface
-	 */
-	public function getHashGenerator(): GeneratorInterface;
+	public function getHashGenerator(): GeneratorInterface
+	{
+		if(!$this->generator)
+			$this->generator = new HashFileContentGenerator();
+		return $this->generator;
+	}
 }

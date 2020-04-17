@@ -35,7 +35,78 @@
 namespace Skyline\Themes\Service;
 
 
-interface ThemeServiceInterface
+use Skyline\Themes\Theme\ThemeInterface;
+use TASoft\Service\ServiceInterface;
+
+interface ThemeServiceInterface extends ServiceInterface
 {
-	public function getThemes();
+	/**
+	 * Must return a working directory where the themes should be applied
+	 *
+	 * @return string
+	 */
+	public function getWorkingDirectory(): string;
+
+	/**
+	 * If set, does not allow to modify files outside of the working directory
+	 *
+	 * @return bool
+	 */
+	public function restrictToWorkingDirectoryOnly(): bool;
+
+
+	/**
+	 * Gets all physical present themes ready to install
+	 *
+	 * @return string[]
+	 */
+	public function getAvailableThemeIdentifiers();
+
+	/**
+	 * Gets a list of all installed theme identifiers
+	 *
+	 * @return string[]
+	 */
+	public function getInstalledThemeIdentifiers();
+
+	/**
+	 * Searches for all identifiers of themes which match a given name.
+	 * The name may contain glob patterns.
+	 *
+	 * @param string $name
+	 * @return array
+	 */
+	public function getIdentifiersForName(string $name): array;
+
+	/**
+	 * This really loads a theme from physical into memory and prepares it to install or uninstall.
+	 *
+	 * @param string $identifier
+	 * @return ThemeInterface|null
+	 */
+	public function prepareTheme(string $identifier):?ThemeInterface;
+
+	/**
+	 * Memory intensive themes can release memory on this call.
+	 *
+	 * @param ThemeInterface $theme
+	 * @return bool
+	 */
+	public function releaseTheme(ThemeInterface $theme): bool;
+
+	/**
+	 * This method installs a prepared theme into the current working directory.
+	 *
+	 * @param ThemeInterface $theme
+	 * @return void
+	 */
+	public function installTheme(ThemeInterface $theme);
+
+	/**
+	 * This method removes a theme from the current working directory
+	 *
+	 * @param ThemeInterface $theme
+	 * @return void
+	 */
+	public function uninstallTheme(ThemeInterface $theme);
 }

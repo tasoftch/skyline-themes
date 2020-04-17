@@ -34,9 +34,6 @@
 
 namespace Skyline\Themes\Meta;
 
-
-use Skyline\Themes\ThemeMetaInterface;
-
 class AbstractMeta implements ThemeMetaInterface
 {
 	/** @var array All file identifiers */

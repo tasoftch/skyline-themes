@@ -32,58 +32,32 @@
  *
  */
 
-namespace Skyline\Themes;
+namespace Skyline\Themes\Meta;
 
 
-use Skyline\Themes\Exception\ThemeException;
-use Skyline\Themes\Meta\StaticMeta;
-
-class PharTheme extends AbstractFileTheme
+interface ThemeMetaInterface
 {
-	protected $pharAccessPrefix;
+	/**
+	 * Gets all file identifiers.
+	 * Should be the filenames including its directories
+	 *
+	 * @return array|string[]
+	 */
+	public function getFileIdentifiers(): array;
 
 	/**
-	 * @inheritDoc
+	 * Gets the size of a file in bytes.
+	 *
+	 * @param string $fileID
+	 * @return int
 	 */
-	protected function loadFile($filename): bool
-	{
-		$fh = fopen($filename, 'rb');
-		$check = fread($fh, 5);
-		fclose($fh);
-
-		if($check != '<?php')
-			throw new ThemeException("Can not open %s. Invalid architecture", 0, NULL, basename($filename));
-
-		$this->pharAccessPrefix = $path = require $filename;
-		if(is_file($path)) {
-			if(is_file("$path/sizes.php")) {
-				$sizes = require "$path/sizes.php";
-			} else
-				throw new ThemeException("Can not open %s. Invalid architecture: expecting sizes.php file", 0, NULL, basename($filename));
-
-			if(is_file("$path/hashes.php")) {
-				$hashes = require "$path/hashes.php";
-			} else
-				throw new ThemeException("Can not open %s. Invalid architecture: expecting hashes.php file", 0, NULL, basename($filename));
-
-			$this->meta = $this->makeMetadata($sizes, $hashes);
-			return true;
-		}
-		return false;
-	}
-
-	protected function makeMetadata($sizes, $hashes) {
-		return new StaticMeta(
-			$sizes ?: [],
-			$hashes ?: []
-		);
-	}
+	public function getSize(string $fileID): int;
 
 	/**
-	 * @inheritDoc
+	 * Gets a filehash to ensure the file's integrity.
+	 *
+	 * @param string $fileID
+	 * @return string
 	 */
-	public function extractFile(string $fileID, string $destination): bool
-	{
-		return copy("$this->pharAccessPrefix/$fileID", $destination);
-	}
+	public function getHash(string $fileID): string;
 }

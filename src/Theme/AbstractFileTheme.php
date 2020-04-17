@@ -32,37 +32,55 @@
  *
  */
 
-namespace Skyline\Themes;
+namespace Skyline\Themes\Theme;
 
 
-use Skyline\Themes\Hash\GeneratorInterface;
-use Skyline\Themes\Hash\HashFileContentGenerator;
-use Skyline\Themes\Meta\DynamicMeta;
+use Skyline\Themes\Exception\ThemeException;
 
-abstract class AbstractTheme implements ThemeInterface
+abstract class AbstractFileTheme extends AbstractTheme
 {
-	/** @var DynamicMeta */
-	protected $meta;
-	/** @var GeneratorInterface */
-	protected $generator;
+	private $name;
+	private $filename;
+
+	/**
+	 * AbstractFileTheme constructor.
+	 * @param $name
+	 * @param $filename
+	 */
+	public function __construct(string $filename, string $name = "")
+	{
+		$this->name = $name ?: explode(".", basename($filename)) [0];
+		$this->filename = $filename;
+
+		if(!is_file($filename) || !is_readable($filename)) {
+			throw new ThemeException("File %s not found", 1822, NULL, htmlspecialchars( basename($filename) ));
+		}
+		if(!$this->loadFile($filename))
+			throw new ThemeException("Can not load theme file %s", 1822, NULL, htmlspecialchars( basename($filename) ));
+	}
+
+	/**
+	 * Loads the file
+	 *
+	 * @param $filename
+	 * @return bool
+	 */
+	abstract protected function loadFile($filename): bool;
+
 
 	/**
 	 * @inheritDoc
 	 */
-	public function getMeta(): ?ThemeMetaInterface
+	public function getName()
 	{
-		if(!$this->meta)
-			$this->meta = new DynamicMeta();
-		return $this->meta;
+		return $this->name;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function getHashGenerator(): GeneratorInterface
+	public function getIdentifier()
 	{
-		if(!$this->generator)
-			$this->generator = new HashFileContentGenerator();
-		return $this->generator;
+		return $this->filename;
 	}
 }

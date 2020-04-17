@@ -35,7 +35,9 @@
 namespace Skyline\Themes\Service;
 
 
-abstract class AbstractThemeService implements ThemeServiceInterface
-{
+use TASoft\Service\AbstractService;
 
+abstract class AbstractThemeService extends AbstractService implements ThemeServiceInterface
+{
+	const SERVICE_NAME = "themeService";
 }
